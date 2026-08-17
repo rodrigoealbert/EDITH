@@ -1,0 +1,20 @@
+Instructions 
+Saving: 
+
+git status
+git add .
+git commit -m "Describe what you changed"
+git push
+
+Loading:
+
+git pull
+
+Other commands:
+
+git status
+//This tells you whether files have changed, whether they are staged, and whether you need to commit/push.
+
+git log --oneline
+//This shows your saved-version history.
+
