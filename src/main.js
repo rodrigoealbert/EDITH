@@ -1,6 +1,5 @@
 import './style.css'
 import { FilesetResolver, HandLandmarker } from '@mediapipe/tasks-vision'
-
 const app = document.querySelector('#app')
 
 app.innerHTML = `
@@ -24,6 +23,15 @@ const webcam = document.querySelector('#webcam')
 const canvas = document.querySelector('#outputCanvas')
 const canvasContext = canvas.getContext('2d')
 const cameraWrapper = document.querySelector('.camera-wrapper')
+const HAND_CONNECTIONS = [
+  [0,1],[1,2],[2,3],[3,4],           // thumb
+  [0,5],[5,6],[6,7],[7,8],           // index
+  [5,9],[9,10],[10,11],[11,12],      // middle
+  [9,13],[13,14],[14,15],[15,16],    // ring
+  [13,17],[17,18],[18,19],[19,20],   // pinky
+  [0,17]                             // palm base
+]
+
 
 let handLandmarker
 let lastVideoTime = -1
@@ -59,21 +67,25 @@ async function startApp() {
 
 function drawLandmarks(landmarks) {
   canvasContext.clearRect(0, 0, canvas.width, canvas.height)
-
   landmarks.forEach((hand) => {
+    // draw connections first, so dots render on top
+    canvasContext.strokeStyle = '#00e5ff'
+    canvasContext.lineWidth = 2
+    HAND_CONNECTIONS.forEach(([start, end]) => {
+      const p1 = hand[start]
+      const p2 = hand[end]
+      canvasContext.beginPath()
+      canvasContext.moveTo(p1.x * canvas.width, p1.y * canvas.height)
+      canvasContext.lineTo(p2.x * canvas.width, p2.y * canvas.height)
+      canvasContext.stroke()
+    })
+    // then dots
     hand.forEach((point) => {
       const x = point.x * canvas.width
       const y = point.y * canvas.height
-
-      
       canvasContext.beginPath()
-      canvasContext.arc(x, y, 7, 0, Math.PI * 2)
+      canvasContext.arc(x, y, 5, 0, Math.PI * 2)
       canvasContext.fillStyle = '#00f5ff'
-      canvasContext.fill()
-
-      canvasContext.beginPath()
-      canvasContext.arc(x, y, 3, 0, Math.PI * 2)
-      canvasContext.fillStyle = '#07111f'
       canvasContext.fill()
     })
   })
